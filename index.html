@@ -4,186 +4,68 @@
     <meta charset="UTF-8">
     <title>Jon's Cool Stuff</title>
 
-    <!-- Basic page styling -->
     <style>
         body {
+            margin: 0;
+            padding: 40px;
             font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f5f5f5;
-            color: #222;
+            background-color: #0f2d1e;
+            color: #e6f4ea;
         }
 
-        hr {
-            margin: 40px 0;
+        h1, h2, h3, h4 {
+            margin-top: 0;
         }
 
-        /* Snake game section styling */
-        .game-section {
-            background: #111;
-            color: white;
+        a {
+            color: #1f7a4d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: #cdebd6;
+            color: #0f2d1e;
             padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .card img {
+            margin-top: 10px;
             border-radius: 8px;
-            max-width: 460px;
+            max-width: 100%;
         }
 
-        canvas {
-            display: block;
-            margin: 10px auto;
-            background: black;
-            border: 2px solid white;
-        }
-
-        .info {
+        .footer-links {
             text-align: center;
-            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Jon's Web Designer Portfolio</h1>
-    <h2>I am learning the art of Web Design</h2>
-    
-    <hr />
-    
-    <h3><a href="./public/movie-ranking.html">Movie Ranking Project</a></h3>
-    <img src="./assets/images/movie-ranking.png" height="200" alt="Screenshot of Movie Ranking Website"/>
-    
-    <h3><a href="./public/birthday-invite.html">Birthday Invitation</a></h3>
-    <img src="./assets/images/birthday-invite.png" height="200" alt="Screenshot of Birthday Invitation Website"/>
+    <div class="container">
 
-    <hr />
+        <!-- Header -->
+        <section class="card">
+            <h1>Jon's Web Designer Portfolio</h1>
+            <h2>I am learning the art of Web Design</h2>
+        </section>
 
-    <!-- ==============================
-         Snake Game Section
-    =============================== -->
-    <h3><a href="./public/snake_game.html">Play: Snake Game</a></h3>
-    
-    <section class="game-section">
-        <h3>🎮 Mini Project: Snake Game</h3>
-        <p>This is a simple JavaScript game built with HTML canvas.</p>
+        <!-- Projects -->
+        <section class="card">
+            <h3>Projects</h3>
 
-        <div class="info">
-            <strong>Score:</strong> <span id="score">0</span><br />
-            Arrow Keys = Move | Space = Pause | R = Restart
-        </div>
-
-        <canvas id="game" width="400" height="400"></canvas>
-    </section>
-
-    <hr />
-
-    <h4>
-        <a href="./public/about.html">About Me</a> |
-        <a href="./public/contact.html">Contact Me</a>
-    </h4>
-
-    <!-- ==============================
-         Snake Game Script
-    =============================== -->
-    <script>
-        // Canvas setup
-        const canvas = document.getElementById("game");
-        const ctx = canvas.getContext("2d");
-        const box = 20;
-
-        // Game state
-        let snake, direction, food, score, gameInterval, isPaused;
-
-        // Initialize or restart the game
-        function initGame() {
-            snake = [{ x: 10 * box, y: 10 * box }];
-            direction = "RIGHT";
-            food = randomFood();
-            score = 0;
-            isPaused = false;
-
-            document.getElementById("score").textContent = score;
-
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(draw, 120);
-        }
-
-        // Create random food position
-        function randomFood() {
-            return {
-                x: Math.floor(Math.random() * (canvas.width / box)) * box,
-                y: Math.floor(Math.random() * (canvas.height / box)) * box
-            };
-        }
-
-        // Keyboard controls
-        document.addEventListener("keydown", (event) => {
-            const key = event.key;
-
-            if (key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-            if (key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-            if (key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-            if (key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-
-            if (key === " ") isPaused = !isPaused;
-            if (key.toLowerCase() === "r") initGame();
-        });
-
-        // Main game loop
-        function draw() {
-            if (isPaused) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw snake
-            snake.forEach((part, index) => {
-                ctx.fillStyle = index === 0 ? "lime" : "green";
-                ctx.fillRect(part.x, part.y, box, box);
-            });
-
-            // Draw food
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, box, box);
-
-            // Move snake
-            let head = { ...snake[0] };
-            if (direction === "LEFT") head.x -= box;
-            if (direction === "UP") head.y -= box;
-            if (direction === "RIGHT") head.x += box;
-            if (direction === "DOWN") head.y += box;
-
-            // Wall collision
-            if (
-                head.x < 0 || head.y < 0 ||
-                head.x >= canvas.width || head.y >= canvas.height
-            ) {
-                endGame();
-                return;
-            }
-
-            // Self collision
-            if (snake.some(part => part.x === head.x && part.y === head.y)) {
-                endGame();
-                return;
-            }
-
-            // Food collision
-            if (head.x === food.x && head.y === food.y) {
-                score++;
-                document.getElementById("score").textContent = score;
-                food = randomFood();
-            } else {
-                snake.pop();
-            }
-
-            snake.unshift(head);
-        }
-
-        // Game over
-        function endGame() {
-            clearInterval(gameInterval);
-            alert("Game Over! Final Score: " + score);
-        }
-
-        // Start game on load
-        initGame();
-    </script>
-
-</body>
-</html>
+            <h4>
+                <a href="./public/movie-ranking.html">🎬 Movie Ranking Project</a>
+            </h4>
